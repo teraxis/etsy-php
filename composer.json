@@ -15,7 +15,8 @@
     "require-dev": {
         "phpunit/phpunit": "7.3.5",
         "phpunit/php-invoker": ">=2.0.0",
-        "phpunit/php-code-coverage": "6.0.7"
+        "phpunit/php-code-coverage": "6.0.7",
+        "php-curl-class/php-curl-class": ">=8.0",
     },
     "autoload": {
         "psr-4": {
