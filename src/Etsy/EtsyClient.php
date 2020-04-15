@@ -14,12 +14,14 @@ class EtsyClient
 
 	private $consumer_key = "";
 	private $consumer_secret = "";
+	private $proxy = false;
 
-	function __construct($consumer_key, $consumer_secret)
+	function __construct($consumer_key, $consumer_secret, $proxy)
 	{
 		$this->consumer_key = $consumer_key;
 		$this->consumer_secret = $consumer_secret;
-
+		$this->proxy = $proxy;
+		
 		$this->oauth = new \OAuth($consumer_key, $consumer_secret, OAUTH_SIG_METHOD_HMACSHA1, OAUTH_AUTH_TYPE_URI);
 
 		if (defined('OAUTH_REQENGINE_CURL'))
@@ -59,14 +61,59 @@ class EtsyClient
 	        	$this->oauth->enableDebug();
 	        }
 
-	        $data = $this->oauth->fetch($this->base_url . $this->base_path . $path, $params, $method);
-	        $response = $this->oauth->getLastResponse();
-
+	    	$url = $this->base_url . $this->base_path . $path;
+		if($this->proxy == true){
+			$response = $this->curlRequest($url, $params, $method, $proxy);
+            	}
+            	else {
+	        	$data = $this->oauth->fetch($url, $params, $method);
+	        	$response = $this->oauth->getLastResponse();
+		}
 	        return json_decode($response, !$json);
 	    } catch (\OAuthException $e) {
 	        throw new EtsyRequestException($e, $this->oauth, $params);
 	    }
 	}
+
+	public function curlRequest($url, $params, $method, $header, $proxy){
+
+	//        echo '<pre>';
+	//        print_r($proxy);
+	//        die;
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+
+		curl_setopt($ch, CURLOPT_PROXY, $proxy['url']);
+		curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy['auth']);
+
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+		if($method == 'POST'){
+		    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+		    curl_setopt($ch, CURLOPT_POST, true);
+		}elseif($method == 'PUT'){
+	//            $curl->put($url);
+		}elseif($method == 'DELETE'){
+	//            $curl->delete($url);
+		}
+		$result = curl_exec($ch);
+
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		if (curl_errno($ch) || $http_code != 200) {
+		    $result = curl_error($ch);
+		}
+		curl_close($ch);
+	//
+	//        echo '<pre>';
+	//        print_r($result);
+	//        die;
+		return $result;
+	    }
+
 
 	public function getRequestToken(array $extra = array())
 	{
