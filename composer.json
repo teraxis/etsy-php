@@ -1,7 +1,7 @@
 {
     "name": "teraxis/etsy-php",
     "version": "0.12.1",
-    "description": "Simple PHP wrapper for Etsy API",
+    "description": "Simple PHP wrapper for Etsy API via Proxy",
     "license": "MIT",
     "authors": [
     {
