@@ -108,10 +108,7 @@ class EtsyClient
 		    $result = curl_error($ch);
 		}
 		curl_close($ch);
-	//
-	//        echo '<pre>';
-	//        print_r($result);
-	//        die;
+
 		return $result;
 	    }
 
