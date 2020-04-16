@@ -78,10 +78,6 @@ class EtsyClient
 
 	public function curlRequest($url, $params, $method, $header, $proxy){
 
-	//        echo '<pre>';
-	//        print_r($proxy);
-	//        die;
-
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 
