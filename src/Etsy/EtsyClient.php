@@ -63,7 +63,8 @@ class EtsyClient
 
 	    	$url = $this->base_url . $this->base_path . $path;
 		if($this->proxy == true){
-			$response = $this->curlRequest($url, $params, $method, $this->proxy);
+			$header[] = 'Authorization: ' . $this->oauth->getRequestHeader($method, $url, $params);
+                	$response = $this->curlRequest($url, $params, $method, $header, $this->proxy);
             	}
             	else {
 	        	$data = $this->oauth->fetch($url, $params, $method);
@@ -107,10 +108,6 @@ class EtsyClient
 		    $result = curl_error($ch);
 		}
 		curl_close($ch);
-	//
-	//        echo '<pre>';
-	//        print_r($result);
-	//        die;
 		return $result;
 	    }
 
